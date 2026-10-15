@@ -87,9 +87,7 @@
   window.addEventListener("message", (e) => {
     const d = e.data;
     if (e.source !== window || !d || d.source !== "usage-pacer" || d.type !== "usage") return;
-    try {
-      if (new URL(d.url).origin !== window.location.origin) return;
-    } catch (_) { return; }
+    if (!P.isUsageUrl(d.url, window.location.origin)) return;
     if (typeof d.used !== "number" || typeof d.resetsAt !== "number") return;
     state.used = d.used;
     state.resetsAt = d.resetsAt;
@@ -113,6 +111,12 @@
   try {
     chrome.storage.local.get(KEY, (res) => {
       if (res && res[KEY]) state = Object.assign(state, res[KEY]);
+      // Discard any reading cached from a wrong endpoint by v1.0.0.
+      if (!P.isUsageUrl(state.endpoint || "", window.location.origin)) {
+        state.endpoint = null;
+        state.used = null;
+        state.resetsAt = null;
+      }
       start();
     });
   } catch (_) {

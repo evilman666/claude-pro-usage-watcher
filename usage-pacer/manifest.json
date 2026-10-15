@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Weekly Usage Pacer",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Shows how much of your weekly Claude usage you can still spend today, paced evenly over 7 days with carryover inside the week.",
   "permissions": ["storage"],
   "host_permissions": ["https://claude.ai/*"],

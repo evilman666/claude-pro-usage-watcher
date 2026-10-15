@@ -9,6 +9,7 @@
   const post = (msg) => window.postMessage(Object.assign({ source: "usage-pacer" }, msg), window.location.origin);
 
   function handle(url, json) {
+    if (!P.isUsageUrl(url, window.location.origin)) return false;
     const hit = P.findWeekly(json);
     if (!hit) return false;
     post({ type: "usage", url: new URL(url, window.location.origin).href, used: hit.used, resetsAt: hit.resetsAt });
@@ -23,7 +24,7 @@
       if (ct.includes("json")) {
         const raw = args[0];
         const url = typeof raw === "string" ? raw : raw instanceof URL ? raw.href : (raw && raw.url) || "";
-        if (url && new URL(url, window.location.origin).origin === window.location.origin) {
+        if (url && P.isUsageUrl(url, window.location.origin)) {
           res.clone().json().then((j) => handle(url, j)).catch(() => {});
         }
       }
@@ -49,9 +50,7 @@
       const orgs = await r.json();
       const ids = (Array.isArray(orgs) ? orgs : []).map((o) => o.uuid || o.id).filter(Boolean);
       for (const id of ids) {
-        for (const p of ["usage", "usage_limits", "rate_limits"]) {
-          if (await pollUrl("/api/organizations/" + id + "/" + p)) return;
-        }
+        if (await pollUrl("/api/organizations/" + id + "/usage")) return;
       }
     } catch (_) {}
     post({ type: "probe-failed" });

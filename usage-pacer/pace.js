@@ -79,7 +79,18 @@
     return weekly.find((f) => !/opus|sonnet|haiku|model/.test(f.path)) || weekly[0];
   }
 
-  const api = { compute, fmtDuration, findWeekly };
+  // Only this endpoint is trusted. Other pages (e.g. Claude Code) load JSON with
+  // similar-looking fields that would otherwise overwrite the real reading.
+  function isUsageUrl(href, origin) {
+    try {
+      const u = new URL(href, origin);
+      return u.origin === origin && /^\/api\/organizations\/[^/]+\/usage\/?$/.test(u.pathname);
+    } catch (_) {
+      return false;
+    }
+  }
+
+  const api = { compute, fmtDuration, findWeekly, isUsageUrl };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   else root.UsagePace = api;
 })(typeof globalThis !== "undefined" ? globalThis : this);
