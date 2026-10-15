@@ -34,3 +34,5 @@
   white-space: pre-line;
 }
 #usage-pacer.up-expanded .up-sub { display: block; }
+/* Shown when no fresh reading has arrived for ~3 minutes. Click for details. */
+#usage-pacer[data-stale="1"] .up-main::after { content: " \26A0"; color: #fbbf24; }
