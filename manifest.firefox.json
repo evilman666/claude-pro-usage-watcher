@@ -1,0 +1,44 @@
+{
+  "manifest_version": 3,
+  "name": "Weekly Usage Pacer",
+  "version": "1.1.0",
+  "description": "Shows how much of your weekly Claude usage you can still spend today, paced evenly over 7 days with carryover inside the week.",
+  "permissions": [
+    "storage"
+  ],
+  "host_permissions": [
+    "https://claude.ai/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "https://claude.ai/*"
+      ],
+      "js": [
+        "pace.js",
+        "hook.js"
+      ],
+      "run_at": "document_start",
+      "world": "MAIN"
+    },
+    {
+      "matches": [
+        "https://claude.ai/*"
+      ],
+      "js": [
+        "pace.js",
+        "content.js"
+      ],
+      "css": [
+        "styles.css"
+      ],
+      "run_at": "document_idle"
+    }
+  ],
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "usage-pacer@evilman666.github.io",
+      "strict_min_version": "128.0"
+    }
+  }
+}
