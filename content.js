@@ -1,5 +1,6 @@
 // Isolated-world script: stores the latest reading, polls, and draws the badge.
 (function () {
+  console.log("[usage-pacer] content.js loaded");
   if (window.top !== window) return;
   const P = globalThis.UsagePace;
   const POLL_MS = 60 * 1000;
