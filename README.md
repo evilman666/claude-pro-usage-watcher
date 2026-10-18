@@ -15,6 +15,18 @@ Small badge (bottom-right of claude.ai) showing how much of your weekly usage yo
 3. Reload claude.ai (and the installed PWA window).
 4. Open Settings > Usage once. The extension learns where the numbers come from, then refreshes every minute.
 
+## Install (Firefox / Floorp)
+
+Needs Firefox or Floorp 128+ (for MAIN-world content scripts). Firefox uses `manifest.firefox.json`; the code is shared.
+
+Temporary (any build, lasts until restart):
+1. Run `./build-firefox.sh` (or copy the files and rename `manifest.firefox.json` to `manifest.json` in a separate folder).
+2. Open `about:debugging#/runtime/this-firefox`, click Load Temporary Add-on, and pick `manifest.json` from that folder (or the zip).
+
+Permanent: the add-on is unsigned, so release Firefox rejects it. Either use Floorp/Developer Edition/Nightly/ESR with `xpinstall.signatures.required` set to `false` in `about:config` and install the zip from `about:addons` > gear > Install Add-on From File, or sign it for self-distribution via addons.mozilla.org (unlisted).
+
+Check the add-on has access to claude.ai under `about:addons` > Weekly Usage Pacer > Permissions. Then continue from step 3 above.
+
 ## Sub-1% estimate
 
 The API reports weekly and session usage as whole percents. If both meters measure the same usage, weekly% moves by a fixed ratio of session% (session cap / weekly cap). The extension learns that ratio from paired readings, then uses the session meter to place the weekly value between its integer steps.

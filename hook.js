@@ -1,10 +1,11 @@
 // Runs in the page's own JS world so it can see claude.ai's own API responses.
 // It never sends anything off-site; it only posts window messages to content.js.
 (function () {
+  console.log("[usage-pacer] hook.js loaded");
   if (window.__usagePacerHooked) return;
   window.__usagePacerHooked = true;
 
-  const P = window.UsagePace;
+  const P = globalThis.UsagePace;
   const origin = window.location.origin;
   const origFetch = window.fetch.bind(window);
   const post = (msg) => window.postMessage(Object.assign({ source: "usage-pacer" }, msg), origin);
