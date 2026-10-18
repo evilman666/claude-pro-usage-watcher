@@ -6,7 +6,8 @@ Small badge (bottom-right of claude.ai) showing how much of your weekly usage yo
 - Days are aligned to your weekly reset time (reset minus 7 days = start of day 1).
 - Left today = goal - used. Unused budget carries into the next day automatically, and everything restarts at the weekly reset.
 - Green: comfortably under. Amber: under a quarter of a day's budget left. Red: over pace.
-- Click the badge to show or hide details.
+- Click the badge to show or hide details. Click the small `day | wk` pill to switch the headline between % of today's allowance (100% = a full day's budget left, can exceed 100) and % of the week. The other unit is listed in the details. The choice is remembered.
+- Over pace shows as a negative, red, larger number.
 
 ## Install (Brave)
 

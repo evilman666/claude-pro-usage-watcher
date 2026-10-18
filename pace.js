@@ -18,6 +18,7 @@
       perDay: 100 / 7,
       remaining: target - used, // negative = over pace; unused budget carries over within the week
       dayEndsAt: start + dayIndex * DAY,
+      remainingDay: ((target - used) / (100 / 7)) * 100, // same budget as % of one day's allowance; can exceed 100
       resetsAt: resetsAtMs,
     };
   }
