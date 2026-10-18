@@ -9,7 +9,7 @@
   const KEY = "usagePacer";
   const EST_KEY = "usagePacerEst";
 
-  let state = { used: null, resetsAt: null, endpoint: null, fetchedAt: 0, expanded: false };
+  let state = { used: null, resetsAt: null, endpoint: null, fetchedAt: 0, expanded: false, mode: "day" };
   let est = P.newEstimator();
   let lastProbe = 0;
   let lastError = null;
@@ -34,7 +34,21 @@
     dot.className = "up-dot";
     const main = document.createElement("span");
     main.className = "up-main";
-    row.append(dot, main);
+    const mode = document.createElement("span");
+    mode.className = "up-mode";
+    mode.title = "Switch between % of today and % of week";
+    const mDay = document.createElement("span");
+    mDay.textContent = "day";
+    const mWk = document.createElement("span");
+    mWk.textContent = "wk";
+    mode.append(mDay, mWk);
+    mode.addEventListener("click", (e) => {
+      e.stopPropagation();
+      state.mode = state.mode === "week" ? "day" : "week";
+      save();
+      render();
+    });
+    row.append(dot, main, mode);
     const sub = document.createElement("div");
     sub.className = "up-sub";
     root.append(row, sub);
@@ -44,7 +58,7 @@
       render();
     });
     document.documentElement.appendChild(root);
-    refs = { root, main, sub };
+    refs = { root, main, sub, mDay, mWk };
     return refs;
   }
 
@@ -56,8 +70,11 @@
   }
 
   function render() {
-    const { root, main, sub } = ensureBadge();
+    const { root, main, sub, mDay, mWk } = ensureBadge();
     root.classList.toggle("up-expanded", !!state.expanded);
+    const weekMode = state.mode === "week";
+    mDay.className = weekMode ? "" : "up-on";
+    mWk.className = weekMode ? "up-on" : "";
     const now = Date.now();
     const E = readEst();
     const guess = !!(E && E.inferred && !E.exact);
@@ -78,7 +95,8 @@
     }
     const rem = r.remaining;
     const tilde = guess ? "~" : "";
-    main.textContent = rem >= 0 ? tilde + rem.toFixed(1) + "% left today" : tilde + (-rem).toFixed(1) + "% over pace";
+    const shown = weekMode ? rem : r.remainingDay;
+    main.textContent = tilde + shown.toFixed(1) + (weekMode ? "% wk" : "%") + " left today";
     root.dataset.level = rem < 0 ? "over" : rem < r.perDay * 0.25 ? "low" : "ok";
     root.dataset.stale = now - state.fetchedAt > 3 * POLL_MS ? "1" : "0";
 
@@ -96,6 +114,7 @@
           ? "\nNo finer than the reported integer yet (±" + E.half.toFixed(2) + ")"
           : "\nLearning session→week ratio…";
     }
+    text += "\n" + (weekMode ? r.remainingDay : rem).toFixed(1) + (weekMode ? "% of today's allowance" : "% of the week") + " left";
     const age = now - state.fetchedAt;
     text += "\nUpdated " + (age < 60000 ? "just now" : P.fmtDuration(age) + " ago");
     if (lastError && lastError.at > state.fetchedAt) text += "\nRefresh failing (" + lastError.status + ")";
