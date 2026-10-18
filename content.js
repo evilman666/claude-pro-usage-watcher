@@ -1,7 +1,7 @@
 // Isolated-world script: stores the latest reading, polls, and draws the badge.
 (function () {
   if (window.top !== window) return;
-  const P = window.UsagePace;
+  const P = globalThis.UsagePace;
   const POLL_MS = 60 * 1000;
   const RENDER_MS = 15 * 1000;
   const PROBE_EVERY_MS = 10 * 60 * 1000;

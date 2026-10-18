@@ -4,7 +4,7 @@
   if (window.__usagePacerHooked) return;
   window.__usagePacerHooked = true;
 
-  const P = window.UsagePace;
+  const P = globalThis.UsagePace;
   const origin = window.location.origin;
   const origFetch = window.fetch.bind(window);
   const post = (msg) => window.postMessage(Object.assign({ source: "usage-pacer" }, msg), origin);
