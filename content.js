@@ -9,7 +9,7 @@
   const KEY = "usagePacer";
   const EST_KEY = "usagePacerEst";
 
-  let state = { used: null, resetsAt: null, endpoint: null, fetchedAt: 0, expanded: false, mode: "day" };
+  let state = { used: null, resetsAt: null, session: null, endpoint: null, fetchedAt: 0, expanded: false, mode: "day" };
   let est = P.newEstimator();
   let lastProbe = 0;
   let lastError = null;
@@ -51,14 +51,18 @@
     row.append(dot, main, mode);
     const sub = document.createElement("div");
     sub.className = "up-sub";
-    root.append(row, sub);
+    const bar = document.createElement("div");
+    bar.className = "up-bar";
+    const fill = document.createElement("div");
+    bar.appendChild(fill);
+    root.append(row, sub, bar);
     root.addEventListener("click", () => {
       state.expanded = !state.expanded;
       save();
       render();
     });
     document.documentElement.appendChild(root);
-    refs = { root, main, sub, mDay, mWk };
+    refs = { root, main, sub, mDay, mWk, bar, fill };
     return refs;
   }
 
@@ -69,13 +73,28 @@
     return P.readEstimate(est, state.used);
   }
 
+  // 5h session meter as a thin bar along the badge's bottom edge; null when no window is active.
+  function renderSession(bar, fill, now) {
+    const s = state.session;
+    if (!s || s.resetsAt <= now) {
+      bar.hidden = true;
+      return null;
+    }
+    const used = Math.max(0, Math.min(100, s.used));
+    bar.hidden = false;
+    bar.dataset.level = used < 60 ? "ok" : used < 85 ? "low" : "over";
+    fill.style.width = used + "%";
+    return "5h window: " + s.used.toFixed(0) + "% used · resets in " + P.fmtDuration(s.resetsAt - now);
+  }
+
   function render() {
-    const { root, main, sub, mDay, mWk } = ensureBadge();
+    const { root, main, sub, mDay, mWk, bar, fill } = ensureBadge();
     root.classList.toggle("up-expanded", !!state.expanded);
     const weekMode = state.mode === "week";
     mDay.className = weekMode ? "" : "up-on";
     mWk.className = weekMode ? "up-on" : "";
     const now = Date.now();
+    const sessTxt = renderSession(bar, fill, now);
     const E = readEst();
     const guess = !!(E && E.inferred && !E.exact);
     const r = state.used == null ? null : P.compute(E && E.inferred ? E.used : state.used, state.resetsAt, now);
@@ -114,6 +133,7 @@
           ? "\nNo finer than the reported integer yet (±" + E.half.toFixed(2) + ")"
           : "\nLearning session→week ratio…";
     }
+    if (sessTxt) text += "\n" + sessTxt;
     text += "\n" + (weekMode ? r.remainingDay : rem).toFixed(1) + (weekMode ? "% of today's allowance" : "% of the week") + " left";
     const age = now - state.fetchedAt;
     text += "\nUpdated " + (age < 60000 ? "just now" : P.fmtDuration(age) + " ago");
@@ -148,6 +168,7 @@
     const sess = d.session && typeof d.session.used === "number" && typeof d.session.resetsAt === "number" ? d.session : null;
     state.used = d.used;
     state.resetsAt = d.resetsAt;
+    state.session = sess ? { used: sess.used, resetsAt: sess.resetsAt } : null;
     state.endpoint = d.url;
     lastError = null;
     state.fetchedAt = Date.now();

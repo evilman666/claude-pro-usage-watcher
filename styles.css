@@ -14,6 +14,7 @@
   cursor: pointer;
   user-select: none;
   opacity: 0.9;
+  overflow: hidden;
   transition: opacity 0.15s;
 }
 #usage-pacer:hover { opacity: 1; }
@@ -46,3 +47,12 @@
 #usage-pacer .up-mode:hover { border-color: rgba(255, 255, 255, 0.5); }
 /* Negative (over pace): red and larger. */
 #usage-pacer[data-level="over"] .up-main { color: #f87171; font-size: 17px; font-weight: 700; }
+/* 5h session window usage: 1px bar along the bottom edge. */
+#usage-pacer .up-bar {
+  position: absolute; left: 0; right: 0; bottom: 0; height: 1px;
+  background: rgba(255, 255, 255, 0.08);
+}
+#usage-pacer .up-bar[hidden] { display: none; }
+#usage-pacer .up-bar div { height: 100%; width: 0; background: #34d399; }
+#usage-pacer .up-bar[data-level="low"] div { background: #fbbf24; }
+#usage-pacer .up-bar[data-level="over"] div { background: #f87171; }

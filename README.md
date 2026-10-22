@@ -8,6 +8,7 @@ Small badge (bottom-right of claude.ai) showing how much of your weekly usage yo
 - Green: comfortably under. Amber: under a quarter of a day's budget left. Red: over pace.
 - Click the badge to show or hide details. Click the small `day | wk` pill to switch the headline between % of today's allowance (100% = a full day's budget left, can exceed 100) and % of the week. The other unit is listed in the details. The choice is remembered.
 - Over pace shows as a negative, red, larger number.
+- A 1px bar along the bottom edge shows the rolling 5-hour window's usage (green under 60%, amber under 85%, red above). It hides when no 5-hour window is active. The details list its % and reset time.
 
 ## Install (Brave)
 
